@@ -9,3 +9,8 @@ tsconfig.json
 
 #ENV
 .env
+
+#project specific
+
+views/
+upload/

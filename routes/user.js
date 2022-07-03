@@ -13,18 +13,30 @@ const User = require("../models/User");
 
 
 router.post('/register', async(req, res) =>{
-    if(req.body.first_name == null && req.body.first_name == "" && req.body.last_name == null || req.body.last_name == "" || req.body.email == null && req.body.email == "" ||
-    req.body.password == null && req.body.password){
-        res.status(400).json({"msg": "data is missing"})
+    if(req.body.first_name == null || req.body.first_name == "" || req.body.last_name == null || req.body.last_name == "" || req.body.email == null && req.body.email == "" ||
+    req.body.password == null || req.body.password == ""){
+        res.status(400).json({"msg": "data is missing"});
+        return;
     }
     
+    const is_user_existed = await User.findOne({"email": req.body.email})
+    if(is_user_existed != null){
+        res.status(400).json({"msg":"email already existed"});
+        return
+    }
+    if((req.body.password).length < 8){
+        res.status(400).json({"msg": "password is short.Password must be atleast length of 8"});
+        return;
+    }
+
+
     const userData = {
         first_name: req.body.first_name,
         last_name: req.body.last_name,
         email: req.body.email
     }
     userData.password = await bcrypt.hash(req.body.password, 10);
-    const user = await User.create(user)
+    const user = await User.create(userData)
 
     const token = jwt.sign({
         email: user.email,
@@ -50,7 +62,7 @@ router.post('/login', async(req, res) => {
     }
 
 
-    const user = await User.findOne(email);
+    const user = await User.findOne({email});
 
     if(user == null){
         res.status(400).json({"msg": "invalid email"})
@@ -68,6 +80,9 @@ router.post('/login', async(req, res) => {
     res.cookie("token", token)
     res.status(301).json({"msg": "login successed"})
 });
+router.get('/login', (req, res) => {
+    res.render("login")
+})
 
 
 router.get('/logout', userAuth, (req, res) => {

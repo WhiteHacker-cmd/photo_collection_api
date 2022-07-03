@@ -13,7 +13,7 @@ const app = express();
 
 const cookieParser = require('cookie-parser');
 
-// mongoose.connect(process.env.DATABASE_URL)
+mongoose.connect(process.env.DATABASE_URL)
 
 app.use(cookieParser());
 app.use(express.urlencoded({extended: true}))

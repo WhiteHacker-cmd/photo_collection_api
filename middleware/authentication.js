@@ -12,10 +12,10 @@ const user = async(req, res, next) => {
     }
 
     try {
+        const decode = jwt.verify(token, private_key)
 
-        const decode = jwt.verify(toke, private_key)
 
-        const user = await User.findOne(decode.email);
+        const user = await User.findOne({"email": decode.email});
         req.user = user;
         
         
