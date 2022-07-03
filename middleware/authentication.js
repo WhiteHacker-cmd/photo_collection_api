@@ -1,7 +1,11 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
+
+const private_key = process.env.PRIVATE_KEY;
+const User = require("../models/User")
 
 
-const user = (req, res, next) => {
+const user = async(req, res, next) => {
     const token = req.body?.token || req.cookies.token
     if(!token){
        return res.status(501).send("forbidden request");
@@ -9,6 +13,10 @@ const user = (req, res, next) => {
 
     try {
 
+        const decode = jwt.verify(toke, private_key)
+
+        const user = await User.findOne(decode.email);
+        req.user = user;
         
         
     } catch(error) {

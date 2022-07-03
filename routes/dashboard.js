@@ -3,16 +3,25 @@ const express = require("express");
 const router = express.Router();
 
 
-const user = require("../middleware/authentication")
+const userAuth = require("../middleware/authentication");
+const Photo = require("../models/Photo");
 
-router.use(user);
+router.use(userAuth);
 
 router.get('/', (req, res)=> {
-    res.status(200).json({"msg": "dashboard"});
+    const photos = req.user?.uploaded_photos;
+    const res_photo = photos.map((p)=>{
+        return {
+            id: p._id,
+            path: p.path
+        }
+    })
+    res.status(200).json({"photos": photos});
 });
 
 router.route('/:id')
-.get((req, res) => {
+.get(async(req, res) => {
+    const photo = await Photo.findById(req.params.id);
 
 })
 .post((req, res) => {
